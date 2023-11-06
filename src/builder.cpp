@@ -100,7 +100,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent) {
 }
 
 void Builder::build_entity(int idx, LMEntity& ent, const String& classname) {
-	if (classname == "worldspawn" || classname == "func_group") {
+	if (classname == "worldspawn") { // || classname == "func_group") {
 		// Skip worldspawn if the layer is hidden and the "skip hidden layers" option is checked
 		if (m_loader->m_skip_hidden_layers) {
 			bool is_visible = (ent.get_property_int("_tb_layer_hidden", 0) == 0);
@@ -112,19 +112,17 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname) {
 		return;
 	}
 
-	if (m_loader->m_entity_common) {
-		if (classname == "light") {
-			build_entity_light(idx, ent);
-			return;
-		}
+	// if (m_loader->m_entity_common) {
+	// 	if (classname == "light") {
+	// 		build_entity_light(idx, ent);
+	// 		return;
+	// 	}
 
-		if (classname == "area") {
-			build_entity_area(idx, ent);
-			return;
-		}
-
-		//TODO: More common entities
-	}
+	// 	if (classname == "area") {
+	// 		build_entity_area(idx, ent);
+	// 		return;
+	// 	}
+	// }
 
 	build_entity_custom(idx, ent, m_map->entity_geo[idx], classname);
 }
@@ -217,56 +215,56 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 	UtilityFunctions::printerr("Path to entity resource could not be resolved: ", classname);
 }
 
-void Builder::build_entity_light(int idx, LMEntity& ent) {
-	auto light = memnew(OmniLight3D());
+// void Builder::build_entity_light(int idx, LMEntity& ent) {
+// 	auto light = memnew(OmniLight3D());
 
-	light->set_bake_mode(Light3D::BAKE_STATIC);
-	light->set_param(Light3D::PARAM_RANGE, ent.get_property_double("range", 10));
-	light->set_param(Light3D::PARAM_ENERGY, ent.get_property_double("energy", 1));
-	light->set_param(Light3D::PARAM_ATTENUATION, ent.get_property_double("attenuation", 1));
-	light->set_param(Light3D::PARAM_SPECULAR, ent.get_property_double("specular", 0.5));
-	set_entity_node_common(light, ent);
+// 	light->set_bake_mode(Light3D::BAKE_STATIC);
+// 	light->set_param(Light3D::PARAM_RANGE, ent.get_property_double("range", 10));
+// 	light->set_param(Light3D::PARAM_ENERGY, ent.get_property_double("energy", 1));
+// 	light->set_param(Light3D::PARAM_ATTENUATION, ent.get_property_double("attenuation", 1));
+// 	light->set_param(Light3D::PARAM_SPECULAR, ent.get_property_double("specular", 0.5));
+// 	set_entity_node_common(light, ent);
 
-	vec3 color = ent.get_property_vec3("light_color", { 255, 255, 255 });
-	light->set_color(Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f));
+// 	vec3 color = ent.get_property_vec3("light_color", { 255, 255, 255 });
+// 	light->set_color(Color(color.x / 255.0f, color.y / 255.0f, color.z / 255.0f));
 
-	m_loader->add_child(light);
-	light->set_owner(m_loader->get_owner());
-}
+// 	m_loader->add_child(light);
+// 	light->set_owner(m_loader->get_owner());
+// }
 
-void Builder::build_entity_area(int idx, LMEntity& ent) {
-	Vector3 center = lm_transform(ent.center);
+// void Builder::build_entity_area(int idx, LMEntity& ent) {
+// 	Vector3 center = lm_transform(ent.center);
 
-	// Gather surfaces for the area
-	LMSurfaceGatherer surf_gather(m_map);
-	surf_gather.surface_gatherer_set_entity_index_filter(idx);
-	surf_gather.surface_gatherer_run();
+// 	// Gather surfaces for the area
+// 	LMSurfaceGatherer surf_gather(m_map);
+// 	surf_gather.surface_gatherer_set_entity_index_filter(idx);
+// 	surf_gather.surface_gatherer_run();
 
-	auto& surfs = surf_gather.out_surfaces;
-	if (surfs.surface_count == 0) {
-		return;
-	}
+// 	auto& surfs = surf_gather.out_surfaces;
+// 	if (surfs.surface_count == 0) {
+// 		return;
+// 	}
 
-	for (int i = 0; i < surfs.surface_count; i++) {
-		auto& surf = surfs.surfaces[i];
-		if (surf.vertex_count == 0) {
-			continue;
-		}
+// 	for (int i = 0; i < surfs.surface_count; i++) {
+// 		auto& surf = surfs.surfaces[i];
+// 		if (surf.vertex_count == 0) {
+// 			continue;
+// 		}
 
-		// Create the mesh
-		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
-		add_surface_to_mesh(mesh, surf);
+// 		// Create the mesh
+// 		Ref<ArrayMesh> mesh = memnew(ArrayMesh());
+// 		add_surface_to_mesh(mesh, surf);
 
-		// Create the area
-		auto area = memnew(Area3D());
-		m_loader->add_child(area);
-		area->set_owner(m_loader->get_owner());
-		area->set_position(center);
+// 		// Create the area
+// 		auto area = memnew(Area3D());
+// 		m_loader->add_child(area);
+// 		area->set_owner(m_loader->get_owner());
+// 		area->set_position(center);
 
-		// Create collision shape for the area
-		add_collider_from_mesh(area, mesh, ColliderShape::Concave);
-	}
-}
+// 		// Create collision shape for the area
+// 		add_collider_from_mesh(area, mesh, ColliderShape::Concave);
+// 	}
+// }
 
 void Builder::set_entity_node_common(Node3D* node, LMEntity& ent) {
 	// Target name
