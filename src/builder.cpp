@@ -59,6 +59,9 @@ void Builder::build_map() {
 		auto& ent = m_map->entities[i];
 		build_entity(i, ent, ent.get_property("classname"));
 	}
+
+	// TODO (ska):
+	// loop through entity nodes and perform second pass
 }
 
 void Builder::build_worldspawn(int idx, LMEntity& ent) {
@@ -496,9 +499,9 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 			add_surface_to_mesh(collision_mesh, surf);
 
 			// Skip if the texture specifies that we only want collision (invisible walls)
-			if (tex.name == m_loader->get_clip_texture_name()) {
-				continue;
-			}
+			// if (tex.name == m_loader->get_clip_texture_name()) {
+			// 	continue;
+			// }
 
 			// Add surface to visual mesh
 			add_surface_to_mesh(mesh, surf);
