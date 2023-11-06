@@ -54,8 +54,8 @@ public:
 
 	void build_entity(int idx, LMEntity& ent, const String& classname);
 	void build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname);
-	void build_entity_light(int idx, LMEntity& ent);
-	void build_entity_area(int idx, LMEntity& ent);
+	// void build_entity_light(int idx, LMEntity& ent);
+	// void build_entity_area(int idx, LMEntity& ent);
 
 	void set_entity_node_common(Node3D* node, LMEntity& ent);
 	void set_entity_brush_common(int idx, Node3D* node, LMEntity& ent);
@@ -66,6 +66,7 @@ protected:
 	void add_collider_from_mesh(Node3D* area, Ref<ArrayMesh>& mesh, ColliderShape colshape);
 	void add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf);
 	MeshInstance3D* build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape);
+
 
 protected:
 	void load_and_cache_map_textures();
