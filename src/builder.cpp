@@ -244,11 +244,11 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 // 	Vector3 center = lm_transform(ent.center);
 
 // 	// Gather surfaces for the area
-// 	LMSurfaceGatherer surf_gather(m_map);
-// 	surf_gather.surface_gatherer_set_entity_index_filter(idx);
-// 	surf_gather.surface_gatherer_run();
+// 	LMSurfaceGatherer surface_gatherer(m_map);
+// 	surface_gatherer.set_entity_index_filter(idx);
+// 	surface_gatherer.run();
 
-// 	auto& surfs = surf_gather.out_surfaces;
+// 	auto& surfs = surface_gatherer.out_surfaces;
 // 	if (surfs.surface_count == 0) {
 // 		return;
 // 	}
@@ -479,12 +479,12 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		}
 
 		// Gather surfaces for this texture
-		LMSurfaceGatherer surf_gather(m_map);
-		surf_gather.surface_gatherer_set_entity_index_filter(idx);
-		surf_gather.surface_gatherer_set_texture_filter(tex.name);
-		surf_gather.surface_gatherer_run();
+		LMSurfaceGatherer surface_gatherer(m_map);
+		surface_gatherer.set_entity_index_filter(idx);
+		surface_gatherer.set_texture_filter(tex.name);
+		surface_gatherer.run();
 
-		auto& surfs = surf_gather.out_surfaces;
+		auto& surfs = surface_gatherer.out_surfaces;
 		if (surfs.surface_count == 0) {
 			continue;
 		}

@@ -10,31 +10,31 @@
 #include "face.h"
 #include "map_data.h"
 
-void LMSurfaceGatherer::surface_gatherer_set_split_type(SURFACE_SPLIT_TYPE new_split_type) {
+void LMSurfaceGatherer::set_split_type(SURFACE_SPLIT_TYPE new_split_type) {
 	split_type = new_split_type;
 }
 
-void LMSurfaceGatherer::surface_gatherer_set_entity_index_filter(int entity_idx) {
+void LMSurfaceGatherer::set_entity_index_filter(int entity_idx) {
 	entity_filter_idx = entity_idx;
 }
 
-void LMSurfaceGatherer::surface_gatherer_set_texture_filter(const char *texture_name) {
+void LMSurfaceGatherer::set_texture_filter(const char *texture_name) {
 	texture_filter_idx = map_data->map_data_find_texture(texture_name);
 }
 
-void LMSurfaceGatherer::surface_gatherer_set_brush_filter_texture(const char *texture_name) {
+void LMSurfaceGatherer::set_brush_filter_texture(const char *texture_name) {
 	brush_filter_texture_idx = map_data->map_data_find_texture(texture_name);
 }
 
-void LMSurfaceGatherer::surface_gatherer_set_face_filter_texture(const char *texture_name) {
+void LMSurfaceGatherer::set_face_filter_texture(const char *texture_name) {
 	face_filter_texture_idx = map_data->map_data_find_texture(texture_name);
 }
 
-void LMSurfaceGatherer::surface_gatherer_set_worldspawn_layer_filter(bool filter) {
+void LMSurfaceGatherer::set_worldspawn_layer_filter(bool filter) {
 	filter_worldspawn_layers = filter;
 }
 
-bool LMSurfaceGatherer::surface_gatherer_filter_entity(int entity_idx) {
+bool LMSurfaceGatherer::filter_entity(int entity_idx) {
 	// Omit filtered entity indices
 	if (entity_filter_idx != -1 && entity_idx != entity_filter_idx) {
 		return true;
@@ -43,7 +43,7 @@ bool LMSurfaceGatherer::surface_gatherer_filter_entity(int entity_idx) {
 	return false;
 }
 
-bool LMSurfaceGatherer::surface_gatherer_filter_brush(int entity_idx, int brush_idx) {
+bool LMSurfaceGatherer::filter_brush(int entity_idx, int brush_idx) {
 	const LMEntity *ents = map_data->map_data_get_entities();
 	LMBrush *brush_inst = &ents[entity_idx].brushes[brush_idx];
 
@@ -80,7 +80,7 @@ bool LMSurfaceGatherer::surface_gatherer_filter_brush(int entity_idx, int brush_
 	return false;
 }
 
-bool LMSurfaceGatherer::surface_gatherer_filter_face(int entity_idx, int brush_idx, int face_idx) {
+bool LMSurfaceGatherer::filter_face(int entity_idx, int brush_idx, int face_idx) {
 	const LMEntity *ents = map_data->map_data_get_entities();
 	LMFace *face_inst = &ents[entity_idx].brushes[brush_idx].faces[face_idx];
 	LMFaceGeometry *face_geo_inst = &map_data->entity_geo[entity_idx].brushes[brush_idx].faces[face_idx];
@@ -103,7 +103,7 @@ bool LMSurfaceGatherer::surface_gatherer_filter_face(int entity_idx, int brush_i
 	return false;
 }
 
-void LMSurfaceGatherer::surface_gatherer_reset_state() {
+void LMSurfaceGatherer::reset_state() {
 	for (int s = 0; s < out_surfaces.surface_count; ++s) {
 		LMSurface *surf = &out_surfaces.surfaces[s];
 		if (surf->vertices != NULL) {
@@ -125,19 +125,19 @@ void LMSurfaceGatherer::surface_gatherer_reset_state() {
 	out_surfaces.surface_count = 0;
 }
 
-void LMSurfaceGatherer::surface_gatherer_run() {
-	surface_gatherer_reset_state();
+void LMSurfaceGatherer::run() {
+	reset_state();
 
 	int index_offset = 0;
 	LMSurface *surf_inst = NULL;
 
 	if (split_type == SST_NONE) {
 		index_offset = 0;
-		surf_inst = surface_gatherer_add_surface();
+		surf_inst = add_surface();
 	}
 
 	for (int e = 0; e < map_data->entity_count; ++e) {
-		if (surface_gatherer_filter_entity(e)) {
+		if (filter_entity(e)) {
 			continue;
 		}
 
@@ -146,11 +146,11 @@ void LMSurfaceGatherer::surface_gatherer_run() {
 
 		if (split_type == SST_ENTITY) {
 			if (entity_inst->spawn_type == EST_MERGE_WORLDSPAWN) {
-				surface_gatherer_add_surface();
+				add_surface();
 				surf_inst = &out_surfaces.surfaces[0];
 				index_offset = surf_inst->vertex_count;
 			} else {
-				surf_inst = surface_gatherer_add_surface();
+				surf_inst = add_surface();
 				index_offset = surf_inst->vertex_count;
 			}
 		}
@@ -159,19 +159,19 @@ void LMSurfaceGatherer::surface_gatherer_run() {
 			LMBrush *brush_inst = &entity_inst->brushes[b];
 			LMBrushGeometry *brush_geo_inst = &entity_geo_inst->brushes[b];
 
-			if (surface_gatherer_filter_brush(e, b)) {
+			if (filter_brush(e, b)) {
 				continue;
 			}
 
 			if (split_type == SST_BRUSH) {
 				index_offset = 0;
-				surf_inst = surface_gatherer_add_surface();
+				surf_inst = add_surface();
 			}
 
 			for (int f = 0; f < brush_inst->face_count; ++f) {
 				LMFaceGeometry *face_geo_inst = &brush_geo_inst->faces[f];
 
-				if (surface_gatherer_filter_face(e, b, f)) {
+				if (filter_face(e, b, f)) {
 					continue;
 				}
 
@@ -199,11 +199,11 @@ void LMSurfaceGatherer::surface_gatherer_run() {
 	}
 }
 
-const LMSurfaces *LMSurfaceGatherer::surface_gatherer_fetch() {
+const LMSurfaces *LMSurfaceGatherer::fetch() {
 	return &out_surfaces;
 }
 
-LMSurface *LMSurfaceGatherer::surface_gatherer_add_surface() {
+LMSurface *LMSurfaceGatherer::add_surface() {
 	out_surfaces.surfaces = (LMSurface *)realloc(out_surfaces.surfaces, (out_surfaces.surface_count + 1) * sizeof(LMSurface));
 	LMSurface *surf_inst = &out_surfaces.surfaces[out_surfaces.surface_count];
 	*surf_inst = { 0 };
@@ -212,7 +212,7 @@ LMSurface *LMSurfaceGatherer::surface_gatherer_add_surface() {
 	return surf_inst;
 }
 
-void LMSurfaceGatherer::surface_gatherer_reset_params() {
+void LMSurfaceGatherer::reset_params() {
 	split_type = SST_NONE;
 	entity_filter_idx = -1;
 	texture_filter_idx = -1;

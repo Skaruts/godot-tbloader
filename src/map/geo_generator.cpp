@@ -430,7 +430,7 @@ LMVertexTangent LMGeoGenerator::get_valve_tangent(const face *face) {
 	return tangent_out;
 }
 
-void LMGeoGenerator::geo_generator_print_entities() {
+void LMGeoGenerator::print_entities() {
 	for (int e = 0; e < map_data->entity_count; ++e) {
 		LMEntity *entity_inst = &map_data->entities[e];
 		LMEntityGeometry *entity_geo_inst = &map_data->entity_geo[e];
@@ -462,11 +462,11 @@ void LMGeoGenerator::geo_generator_print_entities() {
 	}
 }
 
-const LMEntityGeometry *LMGeoGenerator::geo_generator_get_entities() {
+const LMEntityGeometry *LMGeoGenerator::get_entities() {
 	return map_data->entity_geo;
 }
 
-int LMGeoGenerator::geo_generator_get_brush_vertex_count(int entity_idx, int brush_idx) {
+int LMGeoGenerator::get_brush_vertex_count(int entity_idx, int brush_idx) {
 	int vertex_count = 0;
 
 	LMBrush *brush_inst = &map_data->entities[entity_idx].brushes[brush_idx];
@@ -480,7 +480,7 @@ int LMGeoGenerator::geo_generator_get_brush_vertex_count(int entity_idx, int bru
 	return vertex_count;
 }
 
-int LMGeoGenerator::geo_generator_get_brush_index_count(int entity_idx, int brush_idx) {
+int LMGeoGenerator::get_brush_index_count(int entity_idx, int brush_idx) {
 	int index_count = 0;
 
 	LMBrush *brush_inst = &map_data->entities[entity_idx].brushes[brush_idx];
