@@ -208,6 +208,11 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 					}
 				}
 			}
+
+			if (instance->has_method("_post_import_setup")) {
+				instance->call("_post_import_setup");
+			}
+
 			return;
 		}
 	}
