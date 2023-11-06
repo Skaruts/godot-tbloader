@@ -87,7 +87,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent) {
 	// Find name for entity
 	const char* tb_name;
 	if (!strcmp(ent.get_property("classname"), "worldspawn")) {
-		tb_name = "Default Layer";
+		tb_name = "worldspawn";
 	} else {
 		tb_name = ent.get_property("_tb_name", nullptr);
 	}
