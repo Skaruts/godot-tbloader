@@ -19,15 +19,15 @@ void LMSurfaceGatherer::set_entity_index_filter(int entity_idx) {
 }
 
 void LMSurfaceGatherer::set_texture_filter(const char *texture_name) {
-	texture_filter_idx = map_data->map_data_find_texture(texture_name);
+	texture_filter_idx = map_data->find_texture(texture_name);
 }
 
 void LMSurfaceGatherer::set_brush_filter_texture(const char *texture_name) {
-	brush_filter_texture_idx = map_data->map_data_find_texture(texture_name);
+	brush_filter_texture_idx = map_data->find_texture(texture_name);
 }
 
 void LMSurfaceGatherer::set_face_filter_texture(const char *texture_name) {
-	face_filter_texture_idx = map_data->map_data_find_texture(texture_name);
+	face_filter_texture_idx = map_data->find_texture(texture_name);
 }
 
 void LMSurfaceGatherer::set_worldspawn_layer_filter(bool filter) {
@@ -44,7 +44,7 @@ bool LMSurfaceGatherer::filter_entity(int entity_idx) {
 }
 
 bool LMSurfaceGatherer::filter_brush(int entity_idx, int brush_idx) {
-	const LMEntity *ents = map_data->map_data_get_entities();
+	const LMEntity *ents = map_data->get_entities();
 	LMBrush *brush_inst = &ents[entity_idx].brushes[brush_idx];
 
 	// Omit brushes that are fully-textured with clip
@@ -81,7 +81,7 @@ bool LMSurfaceGatherer::filter_brush(int entity_idx, int brush_idx) {
 }
 
 bool LMSurfaceGatherer::filter_face(int entity_idx, int brush_idx, int face_idx) {
-	const LMEntity *ents = map_data->map_data_get_entities();
+	const LMEntity *ents = map_data->get_entities();
 	LMFace *face_inst = &ents[entity_idx].brushes[brush_idx].faces[face_idx];
 	LMFaceGeometry *face_geo_inst = &map_data->entity_geo[entity_idx].brushes[brush_idx].faces[face_idx];
 

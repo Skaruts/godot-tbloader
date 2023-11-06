@@ -192,10 +192,10 @@ void LMGeoGenerator::generate_brush_vertices(int entity_idx, int brush_idx) {
 
 						vec3 normal;
 
-						const char *phong_property = map_data->map_data_get_entity_property(entity_idx, "_phong");
+						const char *phong_property = map_data->get_entity_property(entity_idx, "_phong");
 						bool phong = phong_property != NULL && strcmp(phong_property, "1") == 0;
 						if (phong) {
-							const char *phong_angle_property = map_data->map_data_get_entity_property(entity_idx, "_phong_angle");
+							const char *phong_angle_property = map_data->get_entity_property(entity_idx, "_phong_angle");
 							if (phong_angle_property != NULL) {
 								double threshold = cos((atof(phong_angle_property) + 0.01) * 0.0174533);
 								normal = brush_inst->faces[f0].plane_normal;
@@ -218,7 +218,7 @@ void LMGeoGenerator::generate_brush_vertices(int entity_idx, int brush_idx) {
 							normal = face_inst->plane_normal;
 						}
 
-						LMTextureData *texture = map_data->map_data_get_texture(face_inst->texture_idx);
+						LMTextureData *texture = map_data->get_texture(face_inst->texture_idx);
 
 						LMVertexUV uv;
 						if (face_inst->is_valve_uv) {

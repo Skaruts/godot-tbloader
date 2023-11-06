@@ -60,7 +60,7 @@ void LMMapParser::reset_current_entity() {
 }
 
 bool LMMapParser::load_from_path(const char *map_file) {
-	map_data->map_data_reset();
+	map_data->reset();
 
 	reset_current_face();
 	reset_current_brush();
@@ -111,7 +111,7 @@ bool LMMapParser::load_from_path(const char *map_file) {
 }
 
 void LMMapParser::load_from_godot_file(godot::Ref<godot::FileAccess> f) {
-	map_data->map_data_reset();
+	map_data->reset();
 
 	reset_current_face();
 	reset_current_brush();
@@ -386,7 +386,7 @@ void LMMapParser::token(const char *buf) {
 			break;
 		}
 		case PS_TEXTURE: {
-			current_face.texture_idx = map_data->map_data_register_texture(buf);
+			current_face.texture_idx = map_data->register_texture(buf);
 			set_scope(PS_U);
 			break;
 		}
