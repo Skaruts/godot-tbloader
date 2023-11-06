@@ -157,7 +157,7 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 			}
 
 			auto instance = scene->instantiate();
-			m_loader->add_child(instance);
+			m_loader->add_child(instance, true);
 			instance->set_owner(m_loader->get_owner());
 
 			if (instance->is_class("Node3D")) {
