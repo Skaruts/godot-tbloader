@@ -328,6 +328,9 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent) {
 void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent) {
 	// Position
 	Vector3 center = lm_transform(ent.center);
+	// TODO (ska) this should account for when 'origin' exists as a pivot point
+	//            all brush entities that need to rotate (doors, levers, etc),
+	//            can define the position of their rotation origin that way
 	node->set_position(center);
 
 	// Check what we actually need
@@ -379,6 +382,7 @@ void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, Collide
 
 	auto collision_shape = memnew(CollisionShape3D());
 	collision_shape->set_shape(mesh_shape);
+	collision_shape->set_name("collision");
 	node->add_child(collision_shape, true);
 	collision_shape->set_owner(m_loader->get_owner());
 }
@@ -422,7 +426,8 @@ void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf) {
 
 MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape) {
 	// Create instance name based on entity idx
-	String instance_name = String("entity_{0}_geometry").format(Array::make(idx));
+	// String instance_name = String("entity_{0}_geometry").format(Array::make(idx));
+	String instance_name = "mesh";
 
 	auto mesh_instance = memnew(MeshInstance3D());
 
@@ -447,6 +452,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		Ref<Material> material;
 
 		// Skip processing a surface when it's using the skip material
+		// TODO (ska): is there always only one 'skip' kind of texture?
 		if (tex.name == m_loader->get_skip_texture_name()) {
 			continue;
 		}
