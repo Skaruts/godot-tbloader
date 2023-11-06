@@ -10,8 +10,7 @@
 
 using namespace godot;
 
-class TBLoader : public Node3D
-{
+class TBLoader : public Node3D {
 	GDCLASS(TBLoader, Node3D);
 
 public:

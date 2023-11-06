@@ -20,8 +20,7 @@ using namespace godot;
 
 class TBLoader;
 
-enum class ColliderType
-{
+enum class ColliderType {
 	// Does not create any collider
 	None,
 
@@ -32,14 +31,12 @@ enum class ColliderType
 	Static,
 };
 
-enum class ColliderShape
-{
+enum class ColliderShape {
 	Convex,
 	Concave,
 };
 
-class Builder
-{
+class Builder {
 public:
 	TBLoader* m_loader;
 	std::shared_ptr<LMMapData> m_map;

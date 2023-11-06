@@ -12,18 +12,14 @@
 
 #include <tb_loader.h>
 
-Builder::Builder(TBLoader* loader)
-{
+Builder::Builder(TBLoader* loader) {
 	m_loader = loader;
 	m_map = std::make_shared<LMMapData>();
 }
 
-Builder::~Builder()
-{
-}
+Builder::~Builder() {}
 
-void Builder::load_map(const String& path)
-{
+void Builder::load_map(const String& path) {
 	UtilityFunctions::print("Building map ", path);
 
 	if (!FileAccess::file_exists(path)) {
@@ -58,16 +54,14 @@ void Builder::load_map(const String& path)
 	geogen.run();
 }
 
-void Builder::build_map()
-{
+void Builder::build_map() {
 	for (int i = 0; i < m_map->entity_count; i++) {
 		auto& ent = m_map->entities[i];
 		build_entity(i, ent, ent.get_property("classname"));
 	}
 }
 
-void Builder::build_worldspawn(int idx, LMEntity& ent)
-{
+void Builder::build_worldspawn(int idx, LMEntity& ent) {
 	// Create node for this entity
 	auto container_node = memnew(Node3D());
 	m_loader->add_child(container_node);
@@ -105,8 +99,7 @@ void Builder::build_worldspawn(int idx, LMEntity& ent)
 	container_node->set_position(lm_transform(ent.center));
 }
 
-void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
-{
+void Builder::build_entity(int idx, LMEntity& ent, const String& classname) {
 	if (classname == "worldspawn" || classname == "func_group") {
 		// Skip worldspawn if the layer is hidden and the "skip hidden layers" option is checked
 		if (m_loader->m_skip_hidden_layers) {
@@ -136,8 +129,7 @@ void Builder::build_entity(int idx, LMEntity& ent, const String& classname)
 	build_entity_custom(idx, ent, m_map->entity_geo[idx], classname);
 }
 
-void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname)
-{
+void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo, const String& classname) {
 	// m_loader->m_entity_path => "res://entities/"
 	// "info_player_start" => "info/player/start.tscn", "info/player_start.tscn", "info_player_start.tscn"
 	// "thing" => "thing.tscn"
@@ -225,8 +217,7 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 	UtilityFunctions::printerr("Path to entity resource could not be resolved: ", classname);
 }
 
-void Builder::build_entity_light(int idx, LMEntity& ent)
-{
+void Builder::build_entity_light(int idx, LMEntity& ent) {
 	auto light = memnew(OmniLight3D());
 
 	light->set_bake_mode(Light3D::BAKE_STATIC);
@@ -243,8 +234,7 @@ void Builder::build_entity_light(int idx, LMEntity& ent)
 	light->set_owner(m_loader->get_owner());
 }
 
-void Builder::build_entity_area(int idx, LMEntity& ent)
-{
+void Builder::build_entity_area(int idx, LMEntity& ent) {
 	Vector3 center = lm_transform(ent.center);
 
 	// Gather surfaces for the area
@@ -278,8 +268,7 @@ void Builder::build_entity_area(int idx, LMEntity& ent)
 	}
 }
 
-void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)
-{
+void Builder::set_entity_node_common(Node3D* node, LMEntity& ent) {
 	// Target name
 	auto targetname = ent.get_property("targetname", nullptr);
 	if (targetname != nullptr) {
@@ -333,8 +322,7 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent)
 	}
 }
 
-void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
-{
+void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent) {
 	// Position
 	Vector3 center = lm_transform(ent.center);
 	node->set_position(center);
@@ -369,14 +357,12 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent)
 	build_entity_mesh(idx, ent, node, need_collider, need_collider_shape);
 }
 
-Vector3 Builder::lm_transform(const vec3& v)
-{
+Vector3 Builder::lm_transform(const vec3& v) {
 	vec3 sv = vec3_div_double(v, m_loader->m_inverse_scale);
 	return Vector3(sv.y, sv.z, sv.x);
 }
 
-void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, ColliderShape colshape)
-{
+void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, ColliderShape colshape) {
 	Ref<Shape3D> mesh_shape;
 	switch (colshape) {
 	case ColliderShape::Convex: mesh_shape = mesh->create_convex_shape(); break;
@@ -394,8 +380,7 @@ void Builder::add_collider_from_mesh(Node3D* node, Ref<ArrayMesh>& mesh, Collide
 	collision_shape->set_owner(m_loader->get_owner());
 }
 
-void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf)
-{
+void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf) {
 	PackedVector3Array vertices;
 	PackedFloat32Array tangents;
 	PackedVector3Array normals;
@@ -432,8 +417,7 @@ void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf)
 	mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
 }
 
-MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape)
-{
+MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape) {
 	// Create instance name based on entity idx
 	String instance_name = String("entity_{0}_geometry").format(Array::make(idx));
 
@@ -541,8 +525,7 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	return mesh_instance;
 }
 
-void Builder::load_and_cache_map_textures()
-{
+void Builder::load_and_cache_map_textures() {
 	m_loaded_map_textures.clear();
 
 	// Setup a texture extension list that both Trenchbroom and Godot support
@@ -576,13 +559,11 @@ void Builder::load_and_cache_map_textures()
 	}
 }
 
-String Builder::texture_path(const char* name, const char* extension)
-{
+String Builder::texture_path(const char* name, const char* extension) {
 	return m_loader->m_texture_path + "/" + name + "." + extension;
 }
 
-String Builder::material_path(const char* name)
-{
+String Builder::material_path(const char* name) {
 	auto root_path = m_loader->m_texture_path + "/" + name;
 	String material_path;
 
@@ -595,16 +576,14 @@ String Builder::material_path(const char* name)
 	return material_path;
 }
 
-Ref<Texture2D> Builder::texture_from_name(const char* name)
-{
+Ref<Texture2D> Builder::texture_from_name(const char* name) {
 	if (!m_loaded_map_textures.has(name)) {
 		return nullptr;
 	}
 	return VariantCaster<Ref<Texture2D>>::cast(m_loaded_map_textures[name]);
 }
 
-Ref<Material> Builder::material_from_name(const char* name)
-{
+Ref<Material> Builder::material_from_name(const char* name) {
 	auto path = material_path(name);
 
 	auto resource_loader = ResourceLoader::get_singleton();
