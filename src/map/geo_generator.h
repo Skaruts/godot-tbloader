@@ -23,11 +23,11 @@ public:
 	LMVertexTangent get_standard_tangent(const LMFace *face);
 	LMVertexTangent get_valve_tangent(const LMFace *face);
 
-	void geo_generator_print_entities();
-	const LMEntityGeometry *geo_generator_get_entities();
-	int geo_generator_get_brush_vertex_count(int entity_idx, int brush_idx);
-	int geo_generator_get_brush_index_count(int entity_idx, int brush_idx);
-	void geo_generator_get_brush_vertices(int entity_idx, int brush_idx, LMFaceVertex *o_vertices, int *o_indices);
+	void print_entities();
+	const LMEntityGeometry *get_entities();
+	int get_brush_vertex_count(int entity_idx, int brush_idx);
+	int get_brush_index_count(int entity_idx, int brush_idx);
+	void get_brush_vertices(int entity_idx, int brush_idx, LMFaceVertex *o_vertices, int *o_indices);
 
 	LMGeoGenerator(std::shared_ptr<LMMapData> _map_data) :
 			map_data(_map_data) {}

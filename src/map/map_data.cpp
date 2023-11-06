@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void LMMapData::map_data_reset() {
+void LMMapData::reset() {
 	if (entities != NULL) {
 		for (int e = 0; e < entity_count; ++e) {
 			LMEntity *ent_inst = &entities[e];
@@ -95,16 +95,16 @@ void LMMapData::map_data_reset() {
 	worldspawn_layer_count = 0;
 }
 
-void LMMapData::map_data_register_worldspawn_layer(const char *name, bool build_visuals) {
+void LMMapData::register_worldspawn_layer(const char *name, bool build_visuals) {
 	worldspawn_layers = (LMWorldspawnLayer *)realloc(worldspawn_layers, (worldspawn_layer_count + 1) * sizeof(LMWorldspawnLayer));
 	LMWorldspawnLayer *layer = &worldspawn_layers[worldspawn_layer_count];
 	*layer = { 0 };
-	layer->texture_idx = map_data_find_texture(name);
+	layer->texture_idx = find_texture(name);
 	layer->build_visuals = build_visuals;
 	worldspawn_layer_count++;
 }
 
-int LMMapData::map_data_find_worldspawn_layer(int texture_idx) {
+int LMMapData::find_worldspawn_layer(int texture_idx) {
 	for (int l = 0; l < worldspawn_layer_count; ++l) {
 		LMWorldspawnLayer *layer = &worldspawn_layers[l];
 		if (layer->texture_idx == texture_idx) {
@@ -115,15 +115,15 @@ int LMMapData::map_data_find_worldspawn_layer(int texture_idx) {
 	return -1;
 }
 
-int LMMapData::map_data_get_worldspawn_layer_count() {
+int LMMapData::get_worldspawn_layer_count() {
 	return worldspawn_layer_count;
 }
 
-LMWorldspawnLayer *LMMapData::map_data_get_worldspawn_layers() {
+LMWorldspawnLayer *LMMapData::get_worldspawn_layers() {
 	return worldspawn_layers;
 }
 
-int LMMapData::map_data_register_texture(const char *name) {
+int LMMapData::register_texture(const char *name) {
 	if (textures != NULL) {
 		for (int t = 0; t < texture_count; ++t) {
 			LMTextureData *texture = &textures[t];
@@ -141,7 +141,7 @@ int LMMapData::map_data_register_texture(const char *name) {
 	return texture_count - 1;
 }
 
-void LMMapData::map_data_set_texture_size(const char *name, int width, int height) {
+void LMMapData::set_texture_size(const char *name, int width, int height) {
 	for (int t = 0; t < texture_count; ++t) {
 		LMTextureData *texture = &textures[t];
 		if (strcmp(texture->name, name) == 0) {
@@ -152,15 +152,15 @@ void LMMapData::map_data_set_texture_size(const char *name, int width, int heigh
 	}
 }
 
-int LMMapData::map_data_get_texture_count() {
+int LMMapData::get_texture_count() {
 	return texture_count;
 }
 
-LMTextureData *LMMapData::map_data_get_textures() {
+LMTextureData *LMMapData::get_textures() {
 	return textures;
 }
 
-LMTextureData *LMMapData::map_data_get_texture(int texture_idx) {
+LMTextureData *LMMapData::get_texture(int texture_idx) {
 	if (texture_idx >= 0 && texture_idx < texture_count) {
 		return &textures[texture_idx];
 	}
@@ -168,7 +168,7 @@ LMTextureData *LMMapData::map_data_get_texture(int texture_idx) {
 	return NULL;
 }
 
-int LMMapData::map_data_find_texture(const char *texture_name) {
+int LMMapData::find_texture(const char *texture_name) {
 	for (int t = 0; t < texture_count; ++t) {
 		LMTextureData *texture = &textures[t];
 		if (strcmp(texture->name, texture_name) == 0) {
@@ -179,7 +179,7 @@ int LMMapData::map_data_find_texture(const char *texture_name) {
 	return -1;
 }
 
-void LMMapData::map_data_set_spawn_type_by_classname(const char *key, int spawn_type) {
+void LMMapData::set_spawn_type_by_classname(const char *key, int spawn_type) {
 	for (int e = 0; e < entity_count; ++e) {
 		LMEntity *ent = &entities[e];
 		if (ent->property_count == 0) {
@@ -196,15 +196,15 @@ void LMMapData::map_data_set_spawn_type_by_classname(const char *key, int spawn_
 	}
 }
 
-int LMMapData::map_data_get_entity_count() {
+int LMMapData::get_entity_count() {
 	return entity_count;
 }
 
-const LMEntity *LMMapData::map_data_get_entities() {
+const LMEntity *LMMapData::get_entities() {
 	return entities;
 }
 
-const char *LMMapData::map_data_get_entity_property(int entity_idx, const char *key) {
+const char *LMMapData::get_entity_property(int entity_idx, const char *key) {
 	if (entity_idx < 0) {
 		return NULL;
 	}
@@ -221,7 +221,7 @@ const char *LMMapData::map_data_get_entity_property(int entity_idx, const char *
 	return NULL;
 }
 
-void LMMapData::map_data_print_entities() {
+void LMMapData::print_entities() {
 	for (int e = 0; e < entity_count; ++e) {
 		LMEntity entity_inst = entities[e];
 		printf("Entity %d\n", e);
@@ -239,7 +239,7 @@ void LMMapData::map_data_print_entities() {
 						brush_face.plane_points.v1.x, brush_face.plane_points.v1.y, brush_face.plane_points.v1.z,
 						brush_face.plane_points.v2.x, brush_face.plane_points.v2.y, brush_face.plane_points.v2.z,
 
-						map_data_get_texture(brush_face.texture_idx)->name,
+						get_texture(brush_face.texture_idx)->name,
 
 						brush_face.uv_standard.u,
 						brush_face.uv_standard.v,
