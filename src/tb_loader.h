@@ -24,8 +24,8 @@ public:
 	bool m_filter_nearest = false;
 
 	bool m_entity_common = true;
-	String m_entity_path = "res://entities";
-	String m_texture_path = "res://textures";
+	String m_entity_path = "res://scenes/entities";
+	String m_texture_path = "res://assets/textures";
 	String m_clip_texture_name = "";
 	String m_skip_texture_name = "";
 	uint32_t m_visual_layer_mask = 1;
