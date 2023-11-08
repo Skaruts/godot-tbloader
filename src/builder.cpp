@@ -164,6 +164,18 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 				set_entity_node_common((Node3D*)instance, ent);
 				if (ent.brush_count > 0) {
 					set_entity_brush_common(idx, (Node3D*)instance, ent);
+
+					// (ska) if a brush entity has an 'origin', then that should be the
+					// position of the entity node, and the children should be adjusted
+					// relative to it (or else you can't make rotating entities)
+					if (ent.has_property("origin")) {
+						Node3D* parent = (Node3D*)instance;
+						auto children = parent->get_children();
+						for (int i=0; i < parent->get_child_count(); i++) {
+							Node3D* c = Object::cast_to<Node3D>( children[i] );
+							c->set_position(lm_transform(ent.center) - parent->get_position());
+						}
+					}
 				}
 			}
 
@@ -323,11 +335,11 @@ void Builder::set_entity_node_common(Node3D* node, LMEntity& ent) {
 
 void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent) {
 	// Position
-	Vector3 center = lm_transform(ent.center);
-	// TODO (ska) this should account for when 'origin' exists as a pivot point
-	//            all brush entities that need to rotate (doors, levers, etc),
-	//            can define the position of their rotation origin that way
-	node->set_position(center);
+	// (ska) if brush entity has 'origin', then keep it there
+	if (!ent.has_property("origin")) {
+		Vector3 center = lm_transform(ent.center);
+		node->set_position(center);
+	}
 
 	// Check what we actually need
 	bool need_visual = node->is_class("Node3D");
@@ -514,17 +526,17 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 
 	// Create collisions if needed
 	switch (coltype) {
-	case ColliderType::Mesh:
-		add_collider_from_mesh(parent, collision_mesh, colshape);
-		break;
+		case ColliderType::Mesh:
+			add_collider_from_mesh(parent, collision_mesh, colshape);
+			break;
 
-	case ColliderType::Static:
-		StaticBody3D* static_body = memnew(StaticBody3D());
-		static_body->set_name(String(mesh_instance->get_name()) + "_col");
-		parent->add_child(static_body, true);
-		static_body->set_owner(m_loader->get_owner());
-		add_collider_from_mesh(static_body, collision_mesh, colshape);
-		break;
+		case ColliderType::Static:
+			StaticBody3D* static_body = memnew(StaticBody3D());
+			static_body->set_name(String(mesh_instance->get_name()) + "_col");
+			parent->add_child(static_body, true);
+			static_body->set_owner(m_loader->get_owner());
+			add_collider_from_mesh(static_body, collision_mesh, colshape);
+			break;
 	}
 
 	return mesh_instance;
