@@ -34,12 +34,17 @@ void TBLoader::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture_path", "texture_path"), &TBLoader::set_texture_path);
 	ClassDB::bind_method(D_METHOD("get_texture_path"), &TBLoader::get_texture_path);
 
+	ClassDB::bind_method(D_METHOD("set_post_build_script_path", "post_build_script_path"), &TBLoader::set_post_build_script_path);
+	ClassDB::bind_method(D_METHOD("get_post_build_script_path"), &TBLoader::get_post_build_script_path);
+
+
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
 
 	ADD_GROUP("Map", "map_");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map_resource", PROPERTY_HINT_FILE, "*.map"), "set_map", "get_map");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_inverse_scale", PROPERTY_HINT_NONE, "Inverse Scale"), "set_inverse_scale", "get_inverse_scale");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "map_post_build_script_path", PROPERTY_HINT_FILE, "*.gd"), "set_post_build_script_path", "get_post_build_script_path");
 
 	ADD_GROUP("Lighting", "lighting_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "lighting_unwrap_uv2", PROPERTY_HINT_NONE, "Unwrap UV2"), "set_lighting_unwrap_uv2", "get_lighting_unwrap_uv2");
@@ -161,6 +166,17 @@ void TBLoader::set_texture_path(const String& path) {
 String TBLoader::get_texture_path() {
 	return m_texture_path;
 }
+
+
+
+void TBLoader::set_post_build_script_path(const String& path) {
+	m_post_build_script_path = path;
+}
+
+String TBLoader::get_post_build_script_path() {
+	return m_post_build_script_path;
+}
+
 
 void TBLoader::clear() {
 	while (get_child_count() > 0) {

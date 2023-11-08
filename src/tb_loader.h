@@ -26,6 +26,7 @@ public:
 	bool m_entity_common = true;
 	String m_entity_path = "res://scenes/entities";
 	String m_texture_path = "res://assets/textures";
+	String m_post_build_script_path = "res://scripts/gmi_post_build.gd";
 	String m_clip_texture_name = "";
 	String m_skip_texture_name = "";
 	uint32_t m_visual_layer_mask = 1;
@@ -68,6 +69,9 @@ public:
 	String get_entity_path();
 	void set_texture_path(const String& path);
 	String get_texture_path();
+
+	void set_post_build_script_path(const String& path);
+	String get_post_build_script_path();
 
 	void clear();
 	void build_meshes();

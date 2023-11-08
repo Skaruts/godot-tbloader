@@ -59,9 +59,6 @@ void Builder::build_map() {
 		auto& ent = m_map->entities[i];
 		build_entity(i, ent, ent.get_property("classname"));
 	}
-
-	// TODO (ska):
-	// loop through entity nodes and perform second pass
 }
 
 void Builder::build_worldspawn(int idx, LMEntity& ent) {
@@ -210,10 +207,6 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 						break;
 					}
 				}
-			}
-
-			if (instance->has_method("_post_import_setup")) {
-				instance->call("_post_import_setup");
 			}
 
 			return;
