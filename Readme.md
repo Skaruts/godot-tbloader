@@ -1,88 +1,44 @@
 # TrenchBroom Loader for Godot
-Made as an alternative to [Qodot](https://github.com/QodotPlugin/qodot-plugin), using much of the
-same map parsing code using the original [libmap](https://github.com/QodotPlugin/libmap) and a
-modified [C++ port](https://github.com/EIRTeam/qodot/tree/4.0) of it.
 
-# Why not Qodot?
-Qodot is great! It works really well. I initially made TBLoader because I wanted to try several
-different approaches to creating meshes, including creating a bunch of `CSGMesh3D` inside of
-`CSGCombiner3D`, but that ended up being [problematic](https://github.com/godotengine/godot/issues/58637).
+This is my personal modified version of TBLoader, where I'm adding features I need for my projects, as well as experimenting with ideas I have along the way. 
 
-When I originally made this, Qodot didn't officially support Godot 4. So I decided to take on the
-challenge and rewrite most of it in godot-cpp mostly for fun. Nowadays, Qodot has a .Net version
-available which does support Godot 4: https://github.com/QodotPlugin/Qodot
-
-If you're already using Qodot, there might not be a lot of reasons for you to use this. It is not
-backwards compatible with Qodot, and does a few things differently.
+Please note that this is all very experimental and may not work as intended. Although it seems to.
 
 # Usage
-To install TBLoader, you can either install it through [AssetLib](https://godotengine.org/asset-library/asset/1265)
-(search for "TrenchBroom Loader"), or by downloading a [release from Github](https://github.com/codecat/godot-tbloader/releases)
-and extracting it to your project's `addons` folder, so that you have a structure like this:
-```
-project/addons/tbloader/plugin.cfg
-```
 
-You might have to manually enable the plugin from your project settings. In the Godot editor, click
-on Project -> Project Settings, and go to the Addons tab. Check the "Enable" box next to TBLoader.
+Please refer to TBLoader's [original instructions](https://github.com/codecat/godot-tbloader#usage) for anything you need to know. Most of it works the same, with some nunces pointed out below.
 
-To build a level's geometry, create a `TBLoader` node in your scene hierarchy. In the properties of
-the node you can select where your `.map` file is located, plus some more useful settings. With the
-node still selected and the 3D view open, you will see a button `Build Meshes` in the toolbar the 3D
-view. Click that button to build the geometry.
+# Current major changes and reasoning:
 
-# TrenchBroom game config
-The `tb-gameconfig` folder contains a game configuration for this addon. This includes a simple FGD
-which will have some common entities that create Godot nodes. Simply place the files in a folder
-called `Godot` inside the `games` folder of your TrenchBroom installation, so you would have
-`games/Godot/<files>`.
+## Bug fixes
 
-# Entities
-The following brush entities are supported by default:
+- **`fix objects "rolled" wrongly`** : objects rotated along the X axis in TB, would be rotated the opposite way in Godot.
 
-* `worldspawn` and `func_group`: Mesh instances and collision shapes
-* `area`: [`Area3D`](https://docs.godotengine.org/en/latest/classes/class_area3d.html)
+## Changes
 
-The following point entities are supported by default:
-* `light`: [`OmniLight3D`](https://docs.godotengine.org/en/latest/classes/class_omnilight3d.html)
+- **`added a cfg file`** : this makes it a bit easier to have your settings in one place, that all TBLoader nodes can draw from. The TBLoader node comes with a button (a checkbox) to create a new cfg file. This is largely untested yet.
 
-## Custom entities
-You can make custom entities as well. This works by loading and instantiating a `PackedScene` object
-based on the class name. For example, the class name `foo_bar_foobar` will try to load one of the
-following in this order:
+- **`removed hardcoded entities`** : the plugin can provide example entities without having them hardcoded, such that users can, if they want, delete all of them and create their own entities from a clean slate. I may even build an example project with some more complex entity systems. 
 
-* `res://entities/foo_bar_foobar.tscn`
-* `res://entities/foo/bar_foobar.tscn`
-* `res://entities/foo/bar/foobar.tscn`
+- **`switch to Valve (220) map format`** : It provides much better texturing capabilities, and maybe other benefits, and is actualy supported by TBLoader (without my intervention). As far as I'm aware there's even no good reason to use the Standard (Quake1) format. (Even for people mapping for Quake1.)
 
-The first resource it finds will be loaded and instantiated. The root for this (`res://entities` by
-default) can be changed in the `TBLoader` node properties.
+- **`added pre-/post-build passes`** : the post-build pass allows performing adjustments to the map after building, such as rearraging entities in the tree, if needed, and setting up GI or lightmaps, occluders, navmeshes, etc. I can't think of a use for the pre-build pass, but I added it just in case.
 
-Any properties set on the entity will be set directly on the instantiated node using
-[`_set`](https://docs.godotengine.org/en/latest/classes/class_object.html#class-object-method-set)
-and [`_get`](https://docs.godotengine.org/en/latest/classes/class_object.html#class-object-method-get).
-The getter is used first to determine the type of the property.
+  This comes in two ways (same applies to both passes):
+  - if the root node of the map scene has a script that implements `_pre/_post_build_setup`, then it gets called.
+    ```gdscript
+    func _pre_build_setup(loader: TBLoader): pass
+    func _post_build_setup(loader: TBLoader): pass
+    ```
 
-# Textures
-To see your textures in TrenchBroom, navigate to `Preferences` -> `Godot` -> `Game Path` and set it to your project's root directory. TrenchBroom will be able to see textures in your project. TBLoader will look for your textures in the `res://textures` directory. If you have a material (`rust.material`) in the same folder and with the same name as your texture (`rust.png`), TBLoader will load your material instead.
+  - a separate build script can be set in the config file, which can also implement `_pre/_post_build_setup`, and it will also be called if it exists.
+    ```gdscript
+    func _pre_build_setup(map_root: Node3D, loader: TBLoader): pass
+    func _post_build_setup(map_root: Node3D, loader: TBLoader): pass
+    ```
 
-> Note: This currently only works with textures in `.png` format, and materials in `.material` or `.tres`.
+- **`removed automatic handling of clips`** : the way I see it, different projects have different clipping requirements. Some will get by with a simple `clip`, others will need `monster_clip`, `player_clip`, `projectile_clip`, and maybe others, all of which will probably use different clip textures, and all of which will require setting up different collision layers and/or masks. It's easy enough to create an entity for each clip, and everything can be setup during post-import. At the same time, some users (like me) might like to keep clip geometry around for runtime debugging purposes. Others can easily enough get rid of their geometry during post-build phase, by simply `queue_free()`-ing their mesh node (the collison has to stay).
 
-# Building
-On all platforms, the build process is the same. Make sure scons is installed, and then just run
-`scons target=template_release` to build.
+- **`account for 'origin' property on brush entities`** : this makes it possible to make rotating brush entities in TB (doors, levers, valves, fans, etc), by setting their `origin` property (vec3) to the position where the "hinge" should be. Unfortunately TB doesn't currently have [a way to visually edit the origin](https://github.com/TrenchBroom/TrenchBroom/issues/4347), but you can use a dummy point-entity, place it where the hinge should be, and copy-paste the `origin` to the brush entity.
 
-On Mac, the process is the same, but you will have to codesign and notarize your resulting binary as
-well if you want it to run on consumer hardware. To do this, you need to already have the notary
-tool configured on your machine (you need a keychain profile), and then run:
-
-```
-$ codesign -s "Developer ID Application: Your Name (1234567890)" libtbloader.macos.universal.dylib --timestamp
-$ zip archive.zip libtbloader.macos.universal.dylib
-$ xcrun notarytool submit --keychain-profile "Profile Name" --wait archive.zip
-```
-
-# Credits
-* [Qodot](https://github.com/QodotPlugin/qodot-plugin)
-* [Original libmap](https://github.com/QodotPlugin/libmap)
-* [EIRTeam libmap-cpp](https://github.com/EIRTeam/qodot/tree/4.0) (modified)
+- **`simplified names of meshes and collision nodes`** : this is an ongoing attempt at making it a bit easier to do post-build node rearrangements, by having nodes named and arranged in predictable/consistent patterns. It's still a very experimental WIP, and the way I handle this may change in the future.
