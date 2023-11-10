@@ -189,7 +189,7 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 
 				auto var = instance->get(prop.key);
 				switch (var.get_type()) {
-					case Variant::BOOL: instance->set(prop.key, atoi(prop.value) == 1); break;
+					case Variant::BOOL: instance->set(prop.key, atoi(prop.value) != 0); break;
 					case Variant::INT: instance->set(prop.key, (int64_t)atoll(prop.value)); break;
 					case Variant::FLOAT: instance->set(prop.key, atof(prop.value)); break; //TODO: Locale?
 					case Variant::STRING: instance->set(prop.key, prop.value); break;
