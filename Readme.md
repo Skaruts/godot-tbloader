@@ -20,7 +20,7 @@ Please refer to TBLoader's [original instructions](https://github.com/codecat/go
 
 ## Changes
 
-- **`added a cfg file`** : this makes it a bit easier to have your settings in one place, that all TBLoader nodes can draw from. The TBLoader node comes with a button (a checkbox) to create a new cfg file.
+- **`added a cfg file`** : this makes it a bit easier to have your settings in one place, that all TBLoader nodes can draw from. The TBLoader node comes with a button (a checkbox) to create a new cfg file, and it will use those settings when building maps.
 
 - **`removed hardcoded entities`** : the plugin can provide example entities without having them hardcoded, such that users can always delete all of them and create their own entities from a totally clean slate, if they want. I may build an example project with some more complex entity systems.
 
@@ -49,4 +49,4 @@ Please refer to TBLoader's [original instructions](https://github.com/codecat/go
 
   It's easy enough to create an entity for each clip (and to set it up for having transparency in TB), and it can then be setup during post-import as desired. At the same time, some users (like me) might like to keep clip geometries around for runtime debugging purposes. Others can easily get rid of them by simply `queue_free()`-ing their mesh node during post-build. 
 
-- **`simplified names of meshes and collision nodes`** : this is an ongoing attempt at making it a bit easier to do post-build node rearrangements, by having nodes named and arranged in predictable/consistent patterns. It's still a very experimental WIP, and the way I handle this may change in the future.
+- **`simplified names of meshes and collision nodes`** : this is my ongoing attempt at making it a bit easier to do post-build node rearrangements, by having them named and arranged in predictable/consistent patterns. I'm still fiddling with it, trying to figure out what might work best, and so the way I handle this may change in the future.
