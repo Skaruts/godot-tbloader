@@ -182,6 +182,11 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 			for (int j = 0; j < ent.property_count; j++) {
 				auto& prop = ent.properties[j];
 
+				if (instance->has_method("_set_entity_property")
+				&&  instance->call("_set_entity_property", prop.key, prop.value)) {
+					continue;
+				}
+
 				auto var = instance->get(prop.key);
 				switch (var.get_type()) {
 					case Variant::BOOL: instance->set(prop.key, atoi(prop.value) == 1); break;
