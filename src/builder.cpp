@@ -195,7 +195,13 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 					case Variant::STRING: instance->set(prop.key, prop.value); break;
 
 					case Variant::STRING_NAME: instance->set(prop.key, StringName(prop.value));
-					case Variant::NODE_PATH: instance->set(prop.key, NodePath(prop.value)); //TODO: More TrenchBroom focused node path conversion?
+
+					// (ska): this doesn't seem right: you should never need to type in node_paths in TB.
+					//        Sounds like a very error prone trap. TB workflow should be detached from
+					//        engine/game internals. If you change a node's path in Godot, all your maps
+					//        that use it will break. There are better ways to achieve the same goals.
+					//        Dropping support for this.
+					// case Variant::NODE_PATH: instance->set(prop.key, NodePath(prop.value)); //TODO: More TrenchBroom focused node path conversion?
 
 					case Variant::VECTOR2: {
 						vec2 v = vec2_parse(prop.value);
