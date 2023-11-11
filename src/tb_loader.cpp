@@ -59,6 +59,9 @@ void TBLoader::_bind_methods() {
 	ClassDB::bind_static_method("TBLoader", D_METHOD("to_float", "value"), &TBLoader::to_float);
 
 
+	ADD_PROPERTY(PropertyInfo(Variant::INT,    "inverse_scale",  PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY), "", "get_inverse_scale");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "build_script_path",  PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY), "", "get_build_script_path");
+
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL,   "create_config",  PROPERTY_HINT_NONE),             "set_create_config",        "get_create_config");
 
 	ADD_GROUP("Map", "map_");

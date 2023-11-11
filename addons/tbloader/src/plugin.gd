@@ -60,11 +60,10 @@ func extra_build_pass(map_root:Node3D, loader:TBLoader, func_name:String) -> voi
 	if map_root.has_method(func_name):
 		map_root.call(func_name, loader)
 
-	var build_script_path :String = loader.get_build_script_path()
-	if not build_script_path: return
+	if not loader.build_script_path: return
 
-	if ResourceLoader.exists(build_script_path):
-		var script = ResourceLoader.load(build_script_path).new()
+	if ResourceLoader.exists(loader.build_script_path):
+		var script = ResourceLoader.load(loader.build_script_path).new()
 		if script.has_method(func_name):
 			script.call(func_name, map_root, loader)
 
