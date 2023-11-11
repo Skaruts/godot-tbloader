@@ -8,6 +8,13 @@
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/config_file.hpp>
+#include <godot_cpp/variant/vector2.hpp>
+#include <godot_cpp/variant/vector2i.hpp>
+#include <godot_cpp/variant/vector3.hpp>
+#include <godot_cpp/variant/vector3i.hpp>
+#include <godot_cpp/variant/color.hpp>
+
+#include <vector.h>
 
 using namespace godot;
 
@@ -101,5 +108,12 @@ public:
 	void set_texture_path(const String& path);
 	String get_texture_path();
 
-
+	static Vector2 to_vector2(const String& value);
+	static Vector2i to_vector2i(const String& value);
+	static Vector3 to_vector3(const String& value);
+	static Vector3i to_vector3i(const String& value);
+	static Color to_color(const String& value);
+	static bool to_bool(const String& value);
+	static int64_t to_int(const String& value);
+	static float to_float(const String& value);
 };

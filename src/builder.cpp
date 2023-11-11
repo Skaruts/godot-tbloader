@@ -193,7 +193,6 @@ void Builder::build_entity_custom(int idx, LMEntity& ent, LMEntityGeometry& geo,
 					case Variant::INT: instance->set(prop.key, (int64_t)atoll(prop.value)); break;
 					case Variant::FLOAT: instance->set(prop.key, atof(prop.value)); break; //TODO: Locale?
 					case Variant::STRING: instance->set(prop.key, prop.value); break;
-
 					case Variant::STRING_NAME: instance->set(prop.key, StringName(prop.value));
 
 					// (ska): this doesn't seem right: you should never need to type in node_paths in TB.

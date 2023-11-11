@@ -3,7 +3,14 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/config_file.hpp>
+#include <godot_cpp/variant/vector2.hpp>
+#include <godot_cpp/variant/vector2i.hpp>
+#include <godot_cpp/variant/vector3.hpp>
+#include <godot_cpp/variant/vector3i.hpp>
+#include <godot_cpp/variant/color.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
+#include <vector.h>
 #include <builder.h>
 
 void TBLoader::_bind_methods() {
@@ -39,23 +46,29 @@ void TBLoader::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_build_script_path", "build_script_path"), &TBLoader::set_build_script_path);
 	ClassDB::bind_method(D_METHOD("get_build_script_path"), &TBLoader::get_build_script_path);
 
-
 	ClassDB::bind_method(D_METHOD("clear"), &TBLoader::clear);
 	ClassDB::bind_method(D_METHOD("build_meshes"), &TBLoader::build_meshes);
 
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_vector2", "value"), &TBLoader::to_vector2);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_vector2i", "value"), &TBLoader::to_vector2i);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_vector3", "value"), &TBLoader::to_vector3);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_vector3i", "value"), &TBLoader::to_vector3i);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_color", "value"), &TBLoader::to_color);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_bool", "value"), &TBLoader::to_bool);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_int", "value"), &TBLoader::to_int);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_float", "value"), &TBLoader::to_float);
 
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL,   "create_config",  PROPERTY_HINT_NONE),             "set_create_config",        "get_create_config");
 
 	ADD_GROUP("Map", "map_");
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "file_path",  PROPERTY_HINT_FILE, "*.map"),    "set_map",                  "get_map");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "file_path",  PROPERTY_HINT_FILE, "*.map"),         "set_map",                  "get_map");
 
 	ADD_GROUP("Options", "");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "unwrap_uv2",        PROPERTY_HINT_NONE),             "set_unwrap_uv2",          "get_unwrap_uv2");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "world_collisions",  PROPERTY_HINT_NONE),             "set_collision",           "get_collision");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "filter_nearest",    PROPERTY_HINT_NONE),             "set_filter_nearest",      "get_filter_nearest");
 	ADD_PROPERTY(PropertyInfo(Variant::INT,  "visual_layer_mask", PROPERTY_HINT_LAYERS_3D_RENDER), "set_visual_layer_mask",   "get_visual_layer_mask");
-
 }
 
 TBLoader::TBLoader() {}
@@ -245,3 +258,42 @@ String TBLoader::get_build_script_path() {
 	return m_build_script_path;
 }
 
+
+
+
+Vector2 TBLoader::to_vector2(const String& value) {
+	vec2 v = vec2_parse((const char *)value.ascii().get_data());
+	return Vector2(v.x, v.y);
+}
+
+Vector2i TBLoader::to_vector2i(const String& value) {
+	vec2 v = vec2_parse((const char *)value.ascii().get_data());
+	return Vector2i(v.x, v.y);
+}
+
+Vector3 TBLoader::to_vector3(const String& value) {
+	vec3 v = vec3_parse((const char *)value.ascii().get_data());
+	return Vector3(v.x, v.y, v.z);
+}
+
+Vector3i TBLoader::to_vector3i(const String& value) {
+	vec3 v = vec3_parse((const char *)value.ascii().get_data());
+	return Vector3i(v.x, v.y, v.z);
+}
+
+Color TBLoader::to_color(const String& value) {
+	vec3 v = vec3_parse((const char *)value.ascii().get_data());
+	return Color(v.x/255.0f, v.y/255.0f, v.z/255.0f);
+}
+
+bool TBLoader::to_bool(const String& value) {
+	return atoi((const char *)value.ascii().get_data()) != 0;
+}
+
+int64_t TBLoader::to_int(const String& value) {
+	return (int64_t)atoll((const char *)value.ascii().get_data());
+}
+
+float TBLoader::to_float(const String& value) {
+	return atof((const char *)value.ascii().get_data());
+}
