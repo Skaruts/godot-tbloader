@@ -351,32 +351,33 @@ void Builder::set_entity_brush_common(int idx, Node3D* node, LMEntity& ent) {
 		node->set_position(center);
 	}
 
-	// Check what we actually need
-	bool need_visual = node->is_class("Node3D");
-	ColliderType need_collider = ColliderType::None;
+	// (ska) this function never runs if the intance isn't a Node3D
+	// bool need_visual = node->is_class("Node3D");
+
+	// (ska) this always needs a collider (consider if maybe the plugin could
+	// still automate skipping colliders in some cases, which could be
+	// specified in the cfg file, maybe)
+	ColliderType need_collider = ColliderType::Mesh;
 	ColliderShape need_collider_shape = ColliderShape::Concave;
 
 	if (node->is_class("RigidBody3D")) {
 		// RigidBody3D requires convex collision meshes
-		need_collider = ColliderType::Mesh;
 		need_collider_shape = ColliderShape::Convex;
 
 	} else if (node->is_class("Area3D")) {
 		// Area3D works best with convex collision meshes
-		need_collider = ColliderType::Mesh;
 		need_collider_shape = ColliderShape::Convex;
 
 	} else if (node->is_class("CollisionObject3D")) {
 		// If it's not a dynamic body, we can just use a concave trimesh collider
-		need_collider = ColliderType::Mesh;
 		need_collider_shape = ColliderShape::Concave;
 	}
 
 	// Stop if we don't need to do anything
-	if (!need_visual && need_collider == ColliderType::None) {
-		UtilityFunctions::printerr("Brush entity class has no need for visual nor collision: ", node->get_class());
-		return;
-	}
+	// if (!need_visual && need_collider == ColliderType::None) {
+	// 	UtilityFunctions::printerr("Brush entity class has no need for visual nor collision: ", node->get_class());
+	// 	return;
+	// }
 
 	build_entity_mesh(idx, ent, node, need_collider, need_collider_shape);
 }
@@ -444,17 +445,17 @@ void Builder::add_surface_to_mesh(Ref<ArrayMesh>& mesh, LMSurface& surf) {
 
 MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* parent, ColliderType coltype, ColliderShape colshape) {
 	// Create instance name based on entity idx
-	// String instance_name = String("entity_{0}_geometry").format(Array::make(idx));
-	String instance_name = "mesh";
+	// String mesh_instance_name = String("entity_{0}_geometry").format(Array::make(idx));
+	// String mesh_instance_name = "mesh";
 
 	auto mesh_instance = memnew(MeshInstance3D());
 
-	parent->add_child(mesh_instance);
+
 
 	// Set the layers that the mesh instance will be rendered in
 	mesh_instance->set_layer_mask(m_loader->get_visual_layer_mask());
-	mesh_instance->set_owner(m_loader->get_owner());
-	mesh_instance->set_name(instance_name);
+	// mesh_instance->set_owner(m_loader->get_owner());
+	mesh_instance->set_name("mesh");
 
 	// Create mesh
 	Ref<ArrayMesh> mesh = memnew(ArrayMesh());
@@ -466,17 +467,14 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 	for (int i = 0; i < m_map->texture_count; i++) {
 		LMTextureData tex = m_map->textures[i];
 
-		// Create material
-		Ref<Material> material;
-
 		// Skip processing a surface when it's using the skip material
-		// TODO (ska): is there always only one 'skip' kind of texture?
+		// TODO (ska): is there only ever a single 'skip' kind of texture? (I think so)
 		if (tex.name == m_loader->get_skip_texture_name()) {
 			continue;
 		}
 
 		// Attempt to load material
-		material = material_from_name(tex.name);
+		Ref<Material> material = material_from_name(tex.name);
 
 		if (material == nullptr) {
 			// Load texture
@@ -534,20 +532,35 @@ MeshInstance3D* Builder::build_entity_mesh(int idx, LMEntity& ent, Node3D* paren
 		mesh_instance->set_gi_mode(GeometryInstance3D::GI_MODE_STATIC);
 	}
 
-	// Create collisions if needed
-	switch (coltype) {
-		case ColliderType::Mesh:
-			add_collider_from_mesh(parent, collision_mesh, colshape);
-			break;
+	if (parent->is_class("CollisionObject3D")) {
+		parent->add_child(mesh_instance, true);
+		mesh_instance->set_owner(m_loader->get_owner());
+		add_collider_from_mesh(parent, collision_mesh, colshape);
+	} else {
+		StaticBody3D* static_body = memnew(StaticBody3D());
+		static_body->set_name("static_body");
+		parent->add_child(static_body, true);
+		static_body->set_owner(m_loader->get_owner());
 
-		case ColliderType::Static:
-			StaticBody3D* static_body = memnew(StaticBody3D());
-			static_body->set_name(String(mesh_instance->get_name()) + "_col");
-			parent->add_child(static_body, true);
-			static_body->set_owner(m_loader->get_owner());
-			add_collider_from_mesh(static_body, collision_mesh, colshape);
-			break;
+		static_body->add_child(mesh_instance, true);
+		mesh_instance->set_owner(m_loader->get_owner());
+		add_collider_from_mesh(static_body, collision_mesh, colshape);
 	}
+
+	// Create collisions if needed
+	// switch (coltype) {
+	// 	case ColliderType::Mesh:
+	// 		add_collider_from_mesh(parent, collision_mesh, colshape);
+	// 		break;
+
+	// 	case ColliderType::Static:
+	// 		StaticBody3D* static_body = memnew(StaticBody3D());
+	// 		static_body->set_name(String(mesh_instance->get_name()) + "_col");
+	// 		parent->add_child(static_body, true);
+	// 		static_body->set_owner(m_loader->get_owner());
+	// 		add_collider_from_mesh(static_body, collision_mesh, colshape);
+	// 		break;
+	// }
 
 	return mesh_instance;
 }
