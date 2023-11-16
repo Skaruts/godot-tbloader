@@ -116,4 +116,7 @@ public:
 	static bool to_bool(const String& value);
 	static int64_t to_int(const String& value);
 	static float to_float(const String& value);
+
+	static Vector3 to_vector3_yzx(const String& value);
+	static Vector3i to_vector3i_yzx(const String& value);
 };

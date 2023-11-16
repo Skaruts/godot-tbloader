@@ -58,6 +58,8 @@ void TBLoader::_bind_methods() {
 	ClassDB::bind_static_method("TBLoader", D_METHOD("to_int", "value"), &TBLoader::to_int);
 	ClassDB::bind_static_method("TBLoader", D_METHOD("to_float", "value"), &TBLoader::to_float);
 
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_vector3_yzx", "value"), &TBLoader::to_vector3_yzx);
+	ClassDB::bind_static_method("TBLoader", D_METHOD("to_vector3i_yzx", "value"), &TBLoader::to_vector3i_yzx);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT,    "inverse_scale",  PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY), "", "get_inverse_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "build_script_path",  PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY), "", "get_build_script_path");
@@ -299,4 +301,17 @@ int64_t TBLoader::to_int(const String& value) {
 
 float TBLoader::to_float(const String& value) {
 	return atof((const char *)value.ascii().get_data());
+}
+
+
+
+// reorient vectors from TB space to Godot space
+Vector3 TBLoader::to_vector3_yzx(const String& value) {
+	vec3 v = vec3_parse((const char *)value.ascii().get_data());
+	return Vector3(v.y, v.z, v.x);
+}
+
+Vector3i TBLoader::to_vector3i_yzx(const String& value) {
+	vec3 v = vec3_parse((const char *)value.ascii().get_data());
+	return Vector3i(v.y, v.z, v.x);
 }
