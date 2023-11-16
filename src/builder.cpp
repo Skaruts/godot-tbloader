@@ -20,7 +20,7 @@ Builder::Builder(TBLoader* loader) {
 Builder::~Builder() {}
 
 void Builder::load_map(const String& path) {
-	UtilityFunctions::print("Building map ", path);
+	// UtilityFunctions::print("Building map ", path);
 
 	if (!FileAccess::file_exists(path)) {
 		UtilityFunctions::printerr("Map file does not exist!");
@@ -100,8 +100,10 @@ void Builder::build_worldspawn(int idx, LMEntity& ent) {
 }
 
 void Builder::build_entity(int idx, LMEntity& ent, const String& classname) {
-	if (classname == "worldspawn") { // || classname == "func_group") {
+	if (classname == "worldspawn" || classname == "func_group") {
 		// Skip worldspawn if the layer is hidden and the "skip hidden layers" option is checked
+		// (ska) shouldn't layers just be an editor tool, and not used to hide things from Godot
+		//       unless named with a special token? (like '-h')
 		if (m_loader->m_skip_hidden_layers) {
 			bool is_visible = (ent.get_property_int("_tb_layer_hidden", 0) == 0);
 			if (!is_visible) {
